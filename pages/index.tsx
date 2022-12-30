@@ -13,6 +13,7 @@ export default function Home() {
   const [isGapiLoaded, setIsGapiLoaded] = useState(false);
   const [isGsiLoaded, setIsGsiLoaded] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [message, setMessage] = useState('');
 
   useScript('https://apis.google.com/js/api.js', () => {
     gapi.load('client', async () => {
@@ -48,14 +49,38 @@ export default function Home() {
 
   const listLabels = async () => {
     try {
-      const {
-        result: { labels }
-      } = await gapi.client.gmail.users.labels.list({
-        userId: 'me'
-      });
-      console.log(labels?.reduce((str, label) => `${str}${label.name}\n`, 'Labels:\n'));
+      const [
+        {
+          result: { messagesTotal }
+        },
+        {
+          result: { messages }
+        }
+      ] = await Promise.all([
+        gapi.client.gmail.users.labels.get({
+          id: 'INBOX',
+          userId: 'me'
+        }),
+        gapi.client.gmail.users.messages.list({
+          userId: 'me'
+          // q: 'label: flight'
+        })
+      ]);
+
+      if ((messages?.length ?? 0) > 0) {
+        const {
+          result: { payload }
+        } = await gapi.client.gmail.users.messages.get({
+          userId: 'me',
+          id: messages?.[0].id ?? ''
+        });
+
+        const messageBody = (payload?.parts?.[0].parts?.[0].body?.data ?? '').replaceAll('-', '+').replaceAll('_', '/');
+
+        setMessage(decodeURIComponent(escape(atob(messageBody))));
+      }
     } catch (err) {
-      console.log(err);
+      alert((err as Error).message);
     }
   };
 
@@ -99,8 +124,9 @@ export default function Home() {
         <link rel='icon' href='/favicon.ico' />
       </Head>
 
-      <button onClick={onAuthorize}>{isLoggedIn ? 'Refresh' : 'Authorize'}</button>
-      {isLoggedIn && <button onClick={onSignout}>Signout</button>}
+      {isLoggedIn ? <button onClick={onSignout}>Signout</button> : <button onClick={onAuthorize}>Authorize</button>}
+
+      {message && <div dangerouslySetInnerHTML={{ __html: message }} />}
     </>
   );
 }
