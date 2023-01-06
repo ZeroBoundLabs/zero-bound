@@ -73,7 +73,7 @@ export default function Home() {
         q: 'label: travel'
       });
 
-      console.dir(list, { depth: null });
+      console.dir(list);
       if (list?.length) {
         for (const { id } of list) {
           const {
@@ -82,7 +82,7 @@ export default function Home() {
             userId: 'me',
             id: id ?? ''
           });
-          console.dir(payload, { depth: null });
+          console.dir(payload);
           const htmlDoc = document.createElement('div');
           htmlDoc.innerHTML = decodeURIComponent(
             escape(
