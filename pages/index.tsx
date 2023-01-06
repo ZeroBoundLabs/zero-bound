@@ -70,9 +70,10 @@ export default function Home() {
         result: { messages: list }
       } = await gapi.client.gmail.users.messages.list({
         userId: 'me',
-        q: 'subject: flight'
+        q: 'label: travel'
       });
 
+      console.dir(list, { depth: null });
       if (list?.length) {
         for (const { id } of list) {
           const {
@@ -81,7 +82,7 @@ export default function Home() {
             userId: 'me',
             id: id ?? ''
           });
-
+          console.dir(payload, { depth: null });
           const htmlDoc = document.createElement('div');
           htmlDoc.innerHTML = decodeURIComponent(
             escape(
