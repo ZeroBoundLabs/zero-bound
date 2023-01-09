@@ -30,7 +30,7 @@ const extractEmail = (text: string) => {
 type IEmailParser = {[key: string]: (content: gapi.client.gmail.MessagePart) => void }
 
 const extractAirlineContent = (payload: gapi.client.gmail.MessagePart) => {
-  console.log(payload)
+  
   const htmlDoc = document.createElement('div');
   htmlDoc.innerHTML = decodeURIComponent(
     escape(
@@ -42,6 +42,8 @@ const extractAirlineContent = (payload: gapi.client.gmail.MessagePart) => {
     )
   );
 
+  console.log(htmlDoc)
+  
   const script = htmlDoc.querySelector('script[type="application/ld+json"]')?.textContent;
   if (script && JSON.parse(script)['@type']) {
     const parsed = JSON.parse(script);
@@ -144,7 +146,8 @@ export default function Home() {
             }
           }
 
-          // const _ = airlineParser[headerMap.get('Airline')](payload as gapi.client.gmail.MessagePart)
+          const parsed = airlineParser[headerMap.get('Airline')](payload as gapi.client.gmail.MessagePart)
+          // console.log(parsed);
           // Title: [Airline][date] - [from][to]
 
           msgs.push({
