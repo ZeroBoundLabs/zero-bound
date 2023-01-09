@@ -23,6 +23,52 @@ const formatDate = (d: string) => {
   return month + '/' + day + '/' + year + ' ' + hourFormatted + ':' + minuteFormatted + morning;
 };
 
+const extractEmail = (text: string) => {
+  return text.match(/(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/gi);
+}
+
+type IEmailParser = {[key: string]: (content: gapi.client.gmail.MessagePart) => void }
+
+const extractAirlineContent = (payload: gapi.client.gmail.MessagePart) => {
+  console.log(payload)
+  const htmlDoc = document.createElement('div');
+  htmlDoc.innerHTML = decodeURIComponent(
+    escape(
+      atob(
+        ((payload?.parts?.length ? payload.parts?.[1]?.body?.data : payload?.body?.data) ?? '')
+          .replaceAll('-', '+')
+          .replaceAll('_', '/')
+      )
+    )
+  );
+
+  const script = htmlDoc.querySelector('script[type="application/ld+json"]')?.textContent;
+  if (script && JSON.parse(script)['@type']) {
+    const parsed = JSON.parse(script);
+
+    if (parsed['@type'] === 'FlightReservation') {
+      return parsed
+    }
+  }  
+}
+
+const airlineParser: IEmailParser = {
+  'gmail.com': extractAirlineContent,
+  'ryanair.com': extractAirlineContent,
+  'easyjet.com': extractAirlineContent,
+  'klm.com': extractAirlineContent
+}
+
+const getAirlineByDomain = (domain: string) => {
+  const airline: {[key: string]: string} = {
+    'ryanair.com': 'Ryanair Airline',
+    'klm.com': 'KLM Royal Dutch Airlines',
+    'easyjet.com': 'EasyJet Airline',
+    'gmail.com': 'Unknown Airline',
+  }
+  return airline[domain] ?? 'Unknown Airline'
+}
+
 export default function Home() {
   const [isGapiLoaded, setIsGapiLoaded] = useState(false);
   const [isGsiLoaded, setIsGsiLoaded] = useState(false);
@@ -73,7 +119,6 @@ export default function Home() {
         q: 'label: travel'
       });
 
-      console.dir(list);
       if (list?.length) {
         for (const { id } of list) {
           const {
@@ -82,27 +127,33 @@ export default function Home() {
             userId: 'me',
             id: id ?? ''
           });
-          console.dir(payload);
-          const htmlDoc = document.createElement('div');
-          htmlDoc.innerHTML = decodeURIComponent(
-            escape(
-              atob(
-                ((payload?.parts?.length ? payload.parts?.[1]?.body?.data : payload?.body?.data) ?? '')
-                  .replaceAll('-', '+')
-                  .replaceAll('_', '/')
-              )
-            )
-          );
+          // console.dir(payload);
+          if(!payload?.headers) continue;
+          const headerMap =  new Map()
+          
+          for(const { name, value } of payload?.headers) {
+            if (!name) return;
 
-          const script = htmlDoc.querySelector('script[type="application/ld+json"]')?.textContent;
+            if(['To', 'Subject'].includes(name)) { headerMap.set(name, value) }
+            if(['Date'].includes(name)) { headerMap.set(name, formatDate(value ??''))}
+            if(['From'].includes(name)) {
+              const email = extractEmail(String(value))?.[0]
 
-          if (script && JSON.parse(script)['@type']) {
-            const parsed = JSON.parse(script);
-
-            if (parsed['@type'] === 'FlightReservation') {
-              msgs.push(parsed);
+              headerMap.set(name, value)
+              headerMap.set('Airline', String(email).split('@')[1])
             }
           }
+
+          // const _ = airlineParser[headerMap.get('Airline')](payload as gapi.client.gmail.MessagePart)
+          // Title: [Airline][date] - [from][to]
+
+          msgs.push({
+            To: headerMap.get('To'), 
+            Subject: headerMap.get('Subject'), 
+            DateTime: headerMap.get('Date'),
+            From: headerMap.get('From'), 
+            Airline: headerMap.get('Airline')
+          });
         }
 
         setMessages(msgs);
@@ -191,58 +242,27 @@ export default function Home() {
           <>
             <h2 className='text-lg md:text-xl'>Flight Reservations</h2>
             {messages.map(
-              ({
-                underName: { name },
-                reservationFor: {
-                  flightNumber,
-                  airline: { name: airlineName },
-                  departureAirport: { name: departureAirportName, iataCode: departureAirportIataCode },
-                  departureTime,
-                  arrivalAirport: { name: arrivalAirportName, iataCode: arrivalAirportIataCode },
-                  arrivalTime
-                },
-                reservationNumber,
-                reservationStatus
-              }) => (
+              ({ To, Subject, DateTime, From, Airline }, key) => (
                 <div
-                  className='card border-2 border-indigo-400 my-4 w-full grid grid-cols-1 lg:grid-cols-3 gap-[1px]'
-                  key={reservationNumber}
+                  className='card border-2 border-indigo-400 my-4 w-full gap-[1px]'
+                  key={key}
                 >
                   <div>
                     <div>
-                      <span className='font-medium'>Name:</span> {name}
+                      <span className='font-medium'>Subject:</span> {Subject}
+                    </div>                    
+                    <div>
+                      <span className='font-medium'>To:</span> {To}
                     </div>
                     <div>
-                      <span className='font-medium'>Flight Number:</span> {flightNumber}
+                      <span className='font-medium'>From :</span> {From}
                     </div>
                     <div>
-                      <span className='font-medium'>Airline:</span> {airlineName}
+                      <span className='font-medium'>Airline :</span> {getAirlineByDomain(Airline)}
                     </div>
                     <div>
-                      <span className='font-medium'>Reservation Number:</span> {reservationNumber}
+                      <span className='font-medium'>Date :</span> {DateTime}
                     </div>
-                    <div>
-                      <span className='font-medium'>Reservation Status:</span>{' '}
-                      {reservationStatus.replace('http://schema.org/', '')}
-                    </div>
-                  </div>
-                  <hr className='border-indigo-400 border-t-2 lg:hidden my-3' />
-                  <div>
-                    <span className='font-medium'>Departure</span>
-                    <ul>
-                      <li>- {departureAirportName}</li>
-                      <li>- {departureAirportIataCode}</li>
-                      <li>- {formatDate(departureTime)}</li>
-                    </ul>
-                  </div>
-                  <hr className='border-indigo-400 border-t-2 lg:hidden my-3' />
-                  <div>
-                    <span className='font-medium'>Arrival</span>
-                    <ul>
-                      <li>- {arrivalAirportName}</li>
-                      <li>- {arrivalAirportIataCode}</li>
-                      <li>- {formatDate(arrivalTime)}</li>
-                    </ul>
                   </div>
                 </div>
               )
