@@ -130,11 +130,12 @@ export default function Home() {
             id: id ?? ''
           });
 
+          if(!payload) continue;
           extractAirlineContent(payload)
           
           /*
           // console.dir(payload);
-          if(!payload?.headers) continue;
+          
           const headerMap =  new Map()
           
           for(const { name, value } of payload?.headers) {
