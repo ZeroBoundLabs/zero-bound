@@ -129,6 +129,10 @@ export default function Home() {
             userId: 'me',
             id: id ?? ''
           });
+
+          extractAirlineContent(payload)
+          
+          /*
           // console.dir(payload);
           if(!payload?.headers) continue;
           const headerMap =  new Map()
@@ -144,19 +148,13 @@ export default function Home() {
               headerMap.set(name, value)
               headerMap.set('Airline', String(email).split('@')[1])
             }
-          }
+          }*/
 
-          const parsed = airlineParser[headerMap.get('Airline')](payload as gapi.client.gmail.MessagePart)
+          // const parsed = airlineParser[headerMap.get('Airline')](payload as gapi.client.gmail.MessagePart)
           // console.log(parsed);
           // Title: [Airline][date] - [from][to]
 
-          msgs.push({
-            To: headerMap.get('To'), 
-            Subject: headerMap.get('Subject'), 
-            DateTime: headerMap.get('Date'),
-            From: headerMap.get('From'), 
-            Airline: headerMap.get('Airline')
-          });
+          // msgs.push({});
         }
 
         setMessages(msgs);
