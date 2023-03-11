@@ -1,11 +1,11 @@
 import { FunctionComponent, ReactNode, createContext, useContext, useEffect, useState } from "react";
-import { Web3AuthCore } from '@web3auth/core';
-import { OpenloginAdapter } from "@web3auth/openlogin-adapter";
 import { CHAIN_NAMESPACES, SafeEventEmitterProvider, WALLET_ADAPTERS, ADAPTER_EVENTS } from "@web3auth/base";
+import { OpenloginAdapter } from "@web3auth/openlogin-adapter";
+import { Web3AuthCore } from '@web3auth/core';
 import { WEB3AUTH_NETWORK_TYPE } from "../config/web3AuthNetwork";
 
-const WEB3CLIENT_ID = 'BP8dG770wPx1JrN0eYwqVcv5ZDZPwQwh0Oab9rKCnXxmWpjNguHlnLyNuBQwSTt0qpMX83Q6yy2bMHF3IG91di8';
-const GOOGLE_CLIENT_ID = '252338596235-ekpmn2hjjv8uqrs7vons06lmdjhtdqu8.apps.googleusercontent.com';
+const WEB3CLIENT_ID = process.env.NEXT_PUBLIC_WEB3CLIENT_ID;
+const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
 
 export interface IWeb3AuthContext {
     web3Auth: Web3AuthCore | null;

@@ -6,11 +6,11 @@ import Main from "../components/main";
 
 const Home: NextPage = () => {
     return (
-        // <Web3AuthProvider web3AuthNetwork="testnet">
-            <GoogleAuthProvider>
+        <Web3AuthProvider web3AuthNetwork="testnet">
+            {/* <GoogleAuthProvider> */}
                 <Main />
-            </GoogleAuthProvider>
-        // </Web3AuthProvider>
+            {/* </GoogleAuthProvider> */}
+        </Web3AuthProvider>
     )
 }
 

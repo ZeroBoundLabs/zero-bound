@@ -1,8 +1,8 @@
 import { FunctionComponent, ReactNode, createContext, useContext, useState } from "react";
 import useScript from "../hooks/use-script";
 
-const CLIENT_ID = process.env.NEXT_PUBLIC_CLIENT_ID;
 const API_KEY = process.env.NEXT_PUBLIC_API_KEY;
+const CLIENT_ID = process.env.NEXT_PUBLIC_CLIENT_ID;
 const SCOPES = 'https://www.googleapis.com/auth/gmail.readonly';
 const DISCOVERY_DOC = 'https://www.googleapis.com/discovery/v1/apis/gmail/v1/rest';
 
