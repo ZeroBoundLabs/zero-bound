@@ -5,7 +5,6 @@ import getRyanairDetails from './ryanair.extractor';
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === 'GET') {
     const auth = req.headers.authorization
-    console.log(auth)
 
     const gmail = google.gmail({ version: 'v1', headers: { Authorization: `Bearer ${auth}` } });
     const messages = [];
