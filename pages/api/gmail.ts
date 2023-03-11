@@ -12,7 +12,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     try {
       const { data: { messages: list } } = await gmail.users.messages.list({
         userId: 'me',
-        q: 'subject: ryanair'
+        q: 'subject: ryanair' // from: klm | ryanair
       });
 
       if (list?.length) {
