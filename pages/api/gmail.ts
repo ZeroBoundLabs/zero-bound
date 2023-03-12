@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { google } from 'googleapis';
-import getRyanairDetails from './ryanair.extractor';
+import getRyanairDetails from '../../extractors/ryanair.extractor';
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === 'GET') {

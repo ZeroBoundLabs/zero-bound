@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
-import { useWeb3Auth } from "../services/web3AuthProvider";
 import Flights from "./flights";
-import { UserInfo } from "@web3auth/base";
-import { useGoogleAuth } from "../services/googleAuthProvider";
+import { useGoogleAuth } from "../providers/googleAuthProvider";
 
 interface Airline {
     name: string
@@ -20,7 +18,7 @@ export interface IFlightInfo {
 
 const Main = () => {
     const [messages, setMessages] = useState<Array<IFlightInfo>>([]);
-    // const { web3Login, web3Auth, isLoading, logout } = useWeb3Auth(); // isLoggedIn
+
     const {
         token, 
         onLogin, 
@@ -31,29 +29,29 @@ const Main = () => {
     
     useEffect(() => {
         const init =async () => {
-            if(isLoggedIn) {
-                setIsLoading(true);
-                const accessToken = token?.access_token;
-                
-                const response = await fetch('/api/gmail', {
-                    method: 'get',
-                    headers: {
-                      'content-type': 'application/json',
-                      'Authorization': `${accessToken}`
-                    }
-                  });
-                
-                if (response.status !== 200) {
-                    const { message } = await response.json()
-                    console.log(message);
-                    setIsLoading(false);
-                    return;
-                }
+            if (!isLoggedIn) return;
 
-                const { data } = await response.json()
-                setMessages(data);
-                setIsLoading(false);            
+            setIsLoading(true);
+            const accessToken = token?.access_token;
+            
+            const response = await fetch('/api/gmail', {
+                method: 'get',
+                headers: {
+                  'content-type': 'application/json',
+                  'Authorization': `${accessToken}`
+                }
+              });
+            
+            if (response.status !== 200) {
+                const { message } = await response.json()
+                console.log(message);
+                setIsLoading(false);
+                return;
             }
+
+            const { data } = await response.json()
+            setMessages(data);
+            setIsLoading(false);
         }
 
         init()

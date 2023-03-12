@@ -89,7 +89,6 @@ export const GoogleAuthProvider: FunctionComponent<IWeb3AuthState> = ({ children
     const onLogin = () => {
         if (!tokenClient) { return; }
 
-        setIsLoading(true);
         tokenClient.callback = async (resp: any) => {
             if (resp.error !== undefined) {
                 throw resp;
@@ -97,7 +96,7 @@ export const GoogleAuthProvider: FunctionComponent<IWeb3AuthState> = ({ children
 
             setToken(resp)
             setIsLoggedIn(true);
-            setIsLoading(false);
+            setIsLoading(true);
         };
         
         if (gapi.client.getToken() === null) {
@@ -109,13 +108,14 @@ export const GoogleAuthProvider: FunctionComponent<IWeb3AuthState> = ({ children
       
     const onSignout = () => {
         const token = gapi.client.getToken();
-        console.log(token)
-        if (token !== null) {
-          google.accounts.oauth2.revoke(token.access_token, () => {
+        if (!token) return;
+
+        setIsLoading(true)
+        google.accounts.oauth2.revoke(token.access_token, () => {
             gapi.client.setToken(null);
             setIsLoggedIn(false);
-          });
-        }
+            setIsLoading(false)
+        });
     };   
 
     const contextProvider = {

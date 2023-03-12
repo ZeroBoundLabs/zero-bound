@@ -2,6 +2,7 @@ import { FunctionComponent, ReactNode, createContext, useContext, useEffect, use
 import { CHAIN_NAMESPACES, SafeEventEmitterProvider, WALLET_ADAPTERS, ADAPTER_EVENTS } from "@web3auth/base";
 import { OpenloginAdapter } from "@web3auth/openlogin-adapter";
 import { Web3AuthCore } from '@web3auth/core';
+
 import { WEB3AUTH_NETWORK_TYPE } from "../config/web3AuthNetwork";
 
 const WEB3CLIENT_ID = process.env.NEXT_PUBLIC_WEB3CLIENT_ID;
