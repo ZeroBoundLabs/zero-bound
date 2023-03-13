@@ -7,9 +7,10 @@ import Main from "../components/main";
 const Home: NextPage = () => {
     return (
         // <Web3AuthProvider web3AuthNetwork="testnet">
-        <GoogleAuthProvider>
-            <Main />
-        </GoogleAuthProvider>
+            <GoogleAuthProvider>
+                <Main />
+            </GoogleAuthProvider>
+        // </Web3AuthProvider>
     )
 }
 
