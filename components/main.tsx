@@ -94,7 +94,7 @@ const Main = () => {
         <header className='flex flex-wrap justify-between items-center py-3 px-6 bg-indigo-100 w-full'>
             <h1 className='text-xl md:text-3xl font-bold md:font-normal'>Gmail Flight Reservations</h1>
             <div className='space-x-2'>
-            <button onClick={onLogin}>{isLoggedIn ? 'Change User' : 'Web3 Login'}</button>
+            <button onClick={onLogin}>{isLoggedIn ? 'Change User' : 'Login'}</button>
             {isLoggedIn && (
                 <button onClick={logout} className='ml-auto'>
                     Signout
