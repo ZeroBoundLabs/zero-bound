@@ -3,8 +3,10 @@ import { google } from 'googleapis';
 import { getRyanairDetails, getLufthansaDetails, getKlmDetails } from '../../extractors';
 import { FlightDetails } from '../../extractors/types';
 
+const httpMethod = 'GET'
+
 export default async (req: NextApiRequest, res: NextApiResponse) => {
-  if (req.method === 'GET') {
+  if (req.method === httpMethod) {
     const auth = req.headers.authorization
 
     const gmail = google.gmail({ version: 'v1', headers: { Authorization: `Bearer ${auth}` } });
