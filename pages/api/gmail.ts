@@ -4,18 +4,28 @@ import { getRyanairDetails, getLufthansaDetails, getKlmDetails } from '../../ext
 import { FlightDetails } from '../../extractors/types';
 
 const httpMethod = 'GET'
+const searchKey = 'subject' // subject
+const searchTopics = [
+  'ryanair',
+  'klm',
+  'lufthansa',
+  // 'Fwd: Confirmation: Berlin - San Francisco (SNJ3IN)',
+  // 'Fwd: Booking details | Departure: 08 November 2022 | ZRH-BER'
+]
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
-  if (req.method === httpMethod) {
+  if (Object.is(req.method, httpMethod)) {
     const auth = req.headers.authorization
 
     const gmail = google.gmail({ version: 'v1', headers: { Authorization: `Bearer ${auth}` } });
     const messages: Array<FlightDetails> = [];
 
     try {
+      const query = searchTopics.map(s => `${searchKey}: ${s}`).join(' OR ');
+
       const { data: { messages: list } } = await gmail.users.messages.list({
         userId: 'me',
-        q: 'subject: ryanair' // from: klm | ryanair
+        q: query,
       });
 
       if (list?.length) {
@@ -28,11 +38,20 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
           const data = ((payload?.parts?.length ? payload.parts?.[1]?.body?.data : payload?.body?.data) ?? '')
           const decodedBody = Buffer.from(data, 'base64').toString();
 
-          const response = getRyanairDetails(decodedBody);
-          // const response = getLufthansaDetails(decodedBody);
-          // const response = getKlmDetails(decodedBody);
+          // ~> this will be from: example flight@klm.com
+          const from = payload?.headers?.find(header => header?.name?.toLowerCase() === searchKey)?.value?.toLowerCase();
 
-          messages.push(response);
+          let flightInfo = {
+            ...(from?.includes('klm') && getKlmDetails(decodedBody) ),
+            ...(from?.includes('ryanair') && getRyanairDetails(decodedBody)),
+            ...(from?.includes('lufthansa') && getLufthansaDetails(decodedBody)),
+          }
+
+          if (Object.keys(flightInfo).length) {
+            messages.push(flightInfo as FlightDetails);
+          }
+          
+          // ~ DO NOTHING!
         }
       }
     } catch (err: any) {

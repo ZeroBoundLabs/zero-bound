@@ -4,7 +4,6 @@ import { FlightDetails } from './types';
 export const getLufthansaDetails = (html: any): FlightDetails => {
   const { document } = parseHTML(html);
 
-  console.log({ html });
   try {
     const locations = document.querySelector(
       `td[style="font-family:arial,helvetica,verdana,geneva,sans-serif;font-size:16px;color:#071d49;max-width:100%;white-space:nowrap"] > b > span`
@@ -54,21 +53,11 @@ export const getLufthansaDetails = (html: any): FlightDetails => {
       arrivalTime,
       airline: {
         name: 'Lufthansa',
-        logo: 'ryanair.png'
+        logo: 'lufthansa.png'
       }
     };
-  } catch (e) {
-    console.log(e);
-    return {
-      from: 'Unknown',
-      destination: `Unknown`,
-      date: 'Unknown',
-      departureTime: 'Unknown',
-      arrivalTime: 'Unknown',
-      airline: {
-        name: 'Lufthansa',
-        logo: 'ryanair.png'
-      }
-    };
+  } catch (err) {
+    console.log(err);
+    throw err;
   }
 };

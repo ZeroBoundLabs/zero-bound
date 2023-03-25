@@ -1,4 +1,3 @@
-import fs from 'fs'
 import { parseHTML } from 'linkedom';
 import { FlightDetails } from './types';
 
@@ -56,18 +55,7 @@ export const getRyanairDetails = (html: any): FlightDetails => {
         logo: 'ryanair.png'
       }
     };
-  } catch (e) {
-    console.log(e);
-    return {
-      from: 'Unknown',
-      destination: `Unknown`,
-      date: 'Unknown',
-      departureTime: 'Unknown',
-      arrivalTime: 'Unknown',
-      airline: {
-        name: 'Ryanair',
-        logo: 'ryanair.png'
-      }
-    };
+  } catch (err) {
+    throw err
   }
 };

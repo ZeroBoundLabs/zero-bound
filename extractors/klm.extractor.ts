@@ -66,21 +66,11 @@ export const getKlmDetails = (html: any): FlightDetails => {
       arrivalTime,
       airline: {
         name: 'KLM',
-        logo: 'ryanair.png'
+        logo: 'klm.png'
       }
     };
-  } catch (e) {
-    console.log(e);
-    return {
-      from: 'Unknown',
-      destination: `Unknown`,
-      date: 'Unknown',
-      departureTime: 'Unknown',
-      arrivalTime: 'Unknown',
-      airline: {
-        name: 'KLM',
-        logo: 'ryanair.png'
-      }
-    };
+  } catch (err) {
+    console.log(err);
+    throw err;
   }
 };
