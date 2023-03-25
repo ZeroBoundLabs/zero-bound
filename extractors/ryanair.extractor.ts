@@ -1,20 +1,10 @@
+import fs from 'fs'
 import { parseHTML } from 'linkedom';
+import { FlightDetails } from './types';
 
-interface Airline {
-    name: string
-    logo: string
-}
 
-export interface IRyanair {
-    from: string
-    destination: string
-    date: string
-    departureTime: string
-    arrivalTime: string
-    airline: Airline
-}
-
-const getRyanairDetails = (html: any): IRyanair => {
+export const getRyanairDetails = (html: any): FlightDetails => {
+    // fs.writeFileSync('klm.html', html)
     const { document } = parseHTML(html);
 
     const cityFullNamesNode = document.querySelector(
@@ -72,5 +62,3 @@ const getRyanairDetails = (html: any): IRyanair => {
         }
     }
 }
-
-export default getRyanairDetails

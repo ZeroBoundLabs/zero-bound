@@ -1,13 +1,14 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { google } from 'googleapis';
-import getRyanairDetails from '../../extractors/ryanair.extractor';
+import { getRyanairDetails } from '../../extractors';
+import { FlightDetails } from '../../extractors/types';
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === 'GET') {
     const auth = req.headers.authorization
 
     const gmail = google.gmail({ version: 'v1', headers: { Authorization: `Bearer ${auth}` } });
-    const messages = [];
+    const messages: Array<FlightDetails> = [];
 
     try {
       const { data: { messages: list } } = await gmail.users.messages.list({
@@ -26,13 +27,14 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
           const decodedBody = Buffer.from(data, 'base64').toString();
 
           const response = getRyanairDetails(decodedBody);
+          // process.exit(1)
           messages.push(response);
         }
       }
     } catch (err: any) {
-      console.log('Backend ==> ', (err as Error).message);
+      console.log('Backend ==> ', err);
 
-      return res.status(400).json({ 
+      return res.status(400).json({
         message: (err as Error).message
       })
     }
