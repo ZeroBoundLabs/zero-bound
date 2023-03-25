@@ -1,6 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { google } from 'googleapis';
 import getRyanairDetails from '../../extractors/ryanair.extractor';
+import getLufthansaDetails from '../../extractors/lufthansa.extractor';
+import getKlmDetails from '../../extractors/klm.extractor';
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === 'GET') {
@@ -26,6 +28,9 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
           const decodedBody = Buffer.from(data, 'base64').toString();
 
           const response = getRyanairDetails(decodedBody);
+          // const response = getLufthansaDetails(decodedBody);
+          // const response = getKlmDetails(decodedBody);
+
           messages.push(response);
         }
       }
