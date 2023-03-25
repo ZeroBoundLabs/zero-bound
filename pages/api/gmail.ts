@@ -1,15 +1,14 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { google } from 'googleapis';
-import getRyanairDetails from '../../extractors/ryanair.extractor';
-import getLufthansaDetails from '../../extractors/lufthansa.extractor';
-import getKlmDetails from '../../extractors/klm.extractor';
+import { getRyanairDetails, getLufthansaDetails, getKlmDetails } from '../../extractors';
+import { FlightDetails } from '../../extractors/types';
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === 'GET') {
     const auth = req.headers.authorization
 
     const gmail = google.gmail({ version: 'v1', headers: { Authorization: `Bearer ${auth}` } });
-    const messages = [];
+    const messages: Array<FlightDetails> = [];
 
     try {
       const { data: { messages: list } } = await gmail.users.messages.list({
@@ -35,9 +34,9 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         }
       }
     } catch (err: any) {
-      console.log('Backend ==> ', (err as Error).message);
+      console.log('Backend ==> ', err);
 
-      return res.status(400).json({ 
+      return res.status(400).json({
         message: (err as Error).message
       })
     }

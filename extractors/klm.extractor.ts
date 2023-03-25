@@ -1,20 +1,7 @@
 import { parseHTML } from 'linkedom';
+import { FlightDetails } from './types';
 
-interface Airline {
-  name: string;
-  logo: string;
-}
-
-export interface IKlm {
-  from: string;
-  destination: string;
-  date: string;
-  departureTime: string;
-  arrivalTime: string;
-  airline: Airline;
-}
-
-const getKlmDetails = (html: any): IKlm => {
+export const getKlmDetails = (html: any): FlightDetails => {
   const { document } = parseHTML(html);
 
   try {
@@ -97,5 +84,3 @@ const getKlmDetails = (html: any): IKlm => {
     };
   }
 };
-
-export default getKlmDetails;

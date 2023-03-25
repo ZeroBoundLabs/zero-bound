@@ -1,20 +1,7 @@
 import { parseHTML } from 'linkedom';
+import { FlightDetails } from './types';
 
-interface Airline {
-  name: string;
-  logo: string;
-}
-
-export interface ILufthansa {
-  from: string;
-  destination: string;
-  date: string;
-  departureTime: string;
-  arrivalTime: string;
-  airline: Airline;
-}
-
-const getLufthansaDetails = (html: any): ILufthansa => {
+export const getLufthansaDetails = (html: any): FlightDetails => {
   const { document } = parseHTML(html);
 
   console.log({ html });
@@ -85,5 +72,3 @@ const getLufthansaDetails = (html: any): ILufthansa => {
     };
   }
 };
-
-export default getLufthansaDetails;
