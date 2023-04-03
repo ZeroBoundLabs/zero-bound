@@ -1,7 +1,7 @@
 import { FunctionComponent, ReactNode, createContext, useContext, useState } from "react";
 import useScript from "../hooks/use-script";
-import { FlightDetails } from "../extractors/types";
-import { getKlmDetails, getLufthansaDetails, getRyanairDetails } from "../extractors";
+import { FlightDetails, FlightInfo } from "../extractors/types";
+import { getKlmDetails, getLufthansaDetails, getRyanairDetails, getEasyJetDetails } from "../extractors";
 
 const API_KEY = process.env.NEXT_PUBLIC_API_KEY;
 const CLIENT_ID = process.env.NEXT_PUBLIC_CLIENT_ID;
@@ -123,7 +123,9 @@ export const GoogleAuthProvider: FunctionComponent<IWeb3AuthState> = ({ children
     const flights: Array<FlightDetails> = [];
 
     try {
-      const query = searchTopics.map(s => `${searchKey}: ${s}`).join(' OR ');
+      // Temporarily remove to deploy
+      // const query = searchTopics.map(s => `${searchKey}: ${s}`).join(' OR ');
+      const query = "from: confirmation@easyJet.com"
 
       const { result: { messages: list } } = await gapi.client.gmail.users.messages.list({
         userId: 'me',
@@ -143,18 +145,22 @@ export const GoogleAuthProvider: FunctionComponent<IWeb3AuthState> = ({ children
           const data = ((payload?.parts?.length ? payload.parts?.[1]?.body?.data : payload?.body?.data) ?? '')
           const decodedBody = Buffer.from(data, 'base64').toString();
 
-          // ~> this will be from: example flight@klm.com
-          const from = payload?.headers?.find(header => header?.name?.toLowerCase() === searchKey)?.value?.toLowerCase();
+          const easyInfo = getEasyJetDetails(decodedBody);
+          flights.push(easyInfo as FlightDetails);
 
-          let flightInfo = {
-            ...(from?.includes('klm') && getKlmDetails(decodedBody) ),
-            ...(from?.includes('ryanair') && getRyanairDetails(decodedBody)),
-            ...(from?.includes('lufthansa') && getLufthansaDetails(decodedBody)),
-          }
-
-          if (Object.keys(flightInfo).length) {
-            flights.push(flightInfo as FlightDetails);
-          }          
+          //******** Temporarily remove in order to deploy ****** */
+                    // ~> this will be from: example flight@klm.com
+          //           const from = payload?.headers?.find(header => header?.name?.toLowerCase() === searchKey)?.value?.toLowerCase();
+          // console.log('from is ', from)
+          //           let flightInfo = {
+          //             ...(from?.includes('klm') && getKlmDetails(decodedBody) ),
+          //             ...(from?.includes('ryanair') && getRyanairDetails(decodedBody)),
+          //             ...(from?.includes('lufthansa') && getLufthansaDetails(decodedBody)),
+          //           }
+          // console.log('_______________')
+          //           if (Object.keys(flightInfo).length) {
+          //             flights.push(flightInfo as FlightDetails);
+          //           }          
         }
       }
     } catch (err) {
