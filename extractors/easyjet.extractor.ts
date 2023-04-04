@@ -10,6 +10,9 @@ function removeTerminals(str: string): string {
     }
   }
 
+function getEmissions(origin: string, destination: string, operatingCarrierCode: string, flightNumber: string, departureDate: string) {
+    return 152; //kg
+}
 //replacing FlightInfo
 export function getEasyJetDetails(html: string): [boolean, FlightDetails | undefined] {
     const parser = new DOMParser();
@@ -71,7 +74,16 @@ export function getEasyJetDetails(html: string): [boolean, FlightDetails | undef
          const departureDateFormatted = departureDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
          const arrivalDateFormatted = departureDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
 
+         /* {
+        "origin": "CDG",
+        "destination": "BOS",
+        "operating_carrier_code": "AF",
+        "flight_number": 334,
+        "departure_date": {"year": 2023, "month": 11, "day": 1}
+      },*/
         //// dateTime: departureDate,
+        
+        const emissions = getEmissions('FAO', 'BER', 'EJU', '7544', '22 Apr 2023')
         return [true,
             {
             from: departureAirport.trim(),
@@ -85,7 +97,8 @@ export function getEasyJetDetails(html: string): [boolean, FlightDetails | undef
             airline: {
                 name: 'EasyJet',
                 logo: 'ej.png'
-            }
+            },
+            emissions: emissions
           }];
     } catch(error: unknown) {
         return [false, undefined]

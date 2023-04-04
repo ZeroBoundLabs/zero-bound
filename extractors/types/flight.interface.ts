@@ -12,7 +12,8 @@ export interface FlightDetails {
     },
     arrival: {
         dateFormatted: string
-    }
+    },
+    emissions: number
 }
 
 export interface FlightInfo {

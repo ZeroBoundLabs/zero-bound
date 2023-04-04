@@ -53,7 +53,8 @@ export const getRyanairDetails = (html: any): FlightDetails => {
       airline: {
         name: 'Ryanair',
         logo: 'ryanair.png'
-      }
+      },
+      emissions: emissions
     };
   } catch (err) {
     throw err

@@ -54,7 +54,8 @@ export const getLufthansaDetails = (html: any): FlightDetails => {
       airline: {
         name: 'Lufthansa',
         logo: 'lufthansa.png'
-      }
+      },
+      emissions: emissions
     };
   } catch (err) {
     console.log(err);

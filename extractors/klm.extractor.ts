@@ -53,7 +53,8 @@ export const getKlmDetails = (html: any): [boolean, FlightDetails | undefined] =
       airline: {
         name: 'KLM',
         logo: 'klm.png'
-      }
+      },
+      emissions: emissions
     }]
   } catch(error: unknown) {
     return [false, undefined]
