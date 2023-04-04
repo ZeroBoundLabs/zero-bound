@@ -53,6 +53,12 @@ const fromKey = 'from'
 //'Itinerary@ryanair.com'
 const airlineSenders = ['noreply@klm.com', 'confirmation@easyJet.com']
 
+const activeAirlines = {
+  klm: true,
+  easyjet: false,
+  lufthansa: false,
+  ryanair: false
+}
 // Phase the below out
 const searchKey = 'subject' // subject
 const searchTopics = [
@@ -162,7 +168,7 @@ export const GoogleAuthProvider: FunctionComponent<IWeb3AuthState> = ({ children
           const emailFrom = payload?.headers?.find(header => header?.name?.toLowerCase() === "from")?.value;
           
           if(emailSubject && emailFrom) {
-            const extractor = isKlmEmailConfirmation(emailSubject, emailFrom) ? extractors['klm'] : isEasyJetEmailConfirmation(emailSubject, emailFrom) ? extractors['easyjet'] : isLufthansaEmailConfirmation(emailSubject, emailFrom) ? extractors['easyjet'] : undefined;
+            const extractor = isKlmEmailConfirmation(emailSubject, emailFrom) && activeAirlines.klm ? extractors['klm'] : isEasyJetEmailConfirmation(emailSubject, emailFrom) && activeAirlines.easyjet ? extractors['easyjet'] : isLufthansaEmailConfirmation(emailSubject, emailFrom) && activeAirlines.lufthansa ? extractors['easyjet'] : undefined;
           
             if(extractor) {
               let [matchedConfirmationTemplate, flightInfo]: [boolean, FlightDetails | undefined] = extractor(decodedBody);
