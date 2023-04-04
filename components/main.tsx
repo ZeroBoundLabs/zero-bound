@@ -12,6 +12,9 @@ export interface IFlightInfo {
   destination: string
   date: string
   departureTime: string
+  departure: {
+      dateFormatted: string
+  },  
   arrivalTime: string
   airline: Airline
 }

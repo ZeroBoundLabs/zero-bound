@@ -6,10 +6,13 @@ interface Airline {
 export interface FlightDetails {
     from: string
     destination: string
-    date: string
-    departureTime: string
-    arrivalTime: string
-    airline: Airline
+    airline: Airline,
+    departure: {
+        dateFormatted: string
+    },
+    arrival: {
+        dateFormatted: string
+    }
 }
 
 export interface FlightInfo {

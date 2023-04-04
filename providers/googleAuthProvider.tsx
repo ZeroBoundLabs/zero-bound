@@ -48,6 +48,10 @@ interface TokenClient extends google.accounts.oauth2.TokenClient {
   callback: (payload: any) => void
 }
 
+const fromKey = 'from'
+const airlineSenders = ['confirmation@easyJet.com', 'Itinerary@ryanair.com']
+
+// Phase the below out
 const searchKey = 'subject' // subject
 const searchTopics = [
   'ryanair',
@@ -123,9 +127,11 @@ export const GoogleAuthProvider: FunctionComponent<IWeb3AuthState> = ({ children
     const flights: Array<FlightDetails> = [];
 
     try {
+      
       // Temporarily remove to deploy
       // const query = searchTopics.map(s => `${searchKey}: ${s}`).join(' OR ');
-      const query = "from: confirmation@easyJet.com"
+      const query = airlineSenders.map(s => `${fromKey}: ${s}`).join(' OR ');
+      //const query = "from: confirmation@easyJet.com"
 
       const { result: { messages: list } } = await gapi.client.gmail.users.messages.list({
         userId: 'me',
@@ -145,8 +151,18 @@ export const GoogleAuthProvider: FunctionComponent<IWeb3AuthState> = ({ children
           const data = ((payload?.parts?.length ? payload.parts?.[1]?.body?.data : payload?.body?.data) ?? '')
           const decodedBody = Buffer.from(data, 'base64').toString();
 
-          const easyInfo = getEasyJetDetails(decodedBody);
-          flights.push(easyInfo as FlightDetails);
+          // getKlmDetails, 
+          const extractors = [getEasyJetDetails]
+          let matchedConfirmationTemplate = false;
+          let flightInfo: FlightInfo;
+
+          //matchedConfirmationTemplate
+          extractors.forEach(extractor => {
+            let [matchedConfirmationTemplate, flightInfo]: [boolean, FlightDetails | undefined] = extractor(decodedBody)
+            if (matchedConfirmationTemplate) flights.push(flightInfo as FlightDetails);
+          })
+          // const [matchedConfirmationTemplate, easyInfo] = getEasyJetDetails(decodedBody);
+          
 
           //******** Temporarily remove in order to deploy ****** */
                     // ~> this will be from: example flight@klm.com
