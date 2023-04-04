@@ -90,17 +90,4 @@ export function getEasyJetDetails(html: string): [boolean, FlightDetails | undef
     } catch(error: unknown) {
         return [false, undefined]
     }
-
-    
-    // return {
-    //   departureAirport: departureAirport.trim(),
-    //   arrivalAirport: arrivalAirport.trim(),
-    //   departureDateTime: '1:00',
-    //   arrivalDateTime: '1:00',
-    //   flightDuration: '1:00',
-    //   airline: {
-    //     name: 'EasyJet',
-    //     logo: 'klm.png'
-    //   }
-    // };
   }
