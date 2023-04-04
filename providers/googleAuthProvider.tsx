@@ -47,18 +47,36 @@ interface IWeb3AuthProps {
 interface TokenClient extends google.accounts.oauth2.TokenClient {
   callback: (payload: any) => void
 }
+
+type ActiveAirlines = {
+  klm: boolean
+  easyjet: boolean
+  lufthansa: boolean
+  ryanair: boolean
+}
+
+const activeAirlines: ActiveAirlines = {
+  klm: true,
+  easyjet: true,
+  lufthansa: false,
+  ryanair: false
+}
+
 //airfrance-klm@connect-passengers.com, noreply@klm.com, 
 //KLM Reservations
 const fromKey = 'from'
 //'Itinerary@ryanair.com'
-const airlineSenders = ['noreply@klm.com', 'confirmation@easyJet.com']
-
-const activeAirlines = {
-  klm: true,
-  easyjet: false,
-  lufthansa: false,
-  ryanair: false
+function getAirlineSenders(activeAirlines: ActiveAirlines) {
+  let senders = [];
+  if(activeAirlines.klm) senders.push('noreply@klm.com')
+  if(activeAirlines.klm) senders.push('confirmation@easyJet.com')
+  
+  return senders;
 }
+
+const airlineSenders = getAirlineSenders(activeAirlines);
+
+
 // Phase the below out
 const searchKey = 'subject' // subject
 const searchTopics = [
@@ -139,12 +157,8 @@ export const GoogleAuthProvider: FunctionComponent<IWeb3AuthState> = ({ children
 
     try {
       
-      // Temporarily remove to deploy
-      // const query = searchTopics.map(s => `${searchKey}: ${s}`).join(' OR ');
       const query = airlineSenders.map(s => `${fromKey}: ${s}`).join(' OR ');
-      console.log('query is ', query)
-      //const query = "from: confirmation@easyJet.com"
-
+      
       const { result: { messages: list } } = await gapi.client.gmail.users.messages.list({
         userId: 'me',
         q: query,
