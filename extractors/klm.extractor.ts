@@ -1,76 +1,62 @@
 import { parseHTML } from 'linkedom';
 import { FlightDetails } from './types';
 
-export const getKlmDetails = (html: any): FlightDetails => {
-  const { document } = parseHTML(html);
+/**
+ * To find the parser pieces this is useful:
+ * tds.forEach((o, i) => console.log(o.textContent.trim(), i)) then find the data you're looking for and the td index
+ * @param html 
+ * @returns 
+ */
+export const getKlmDetails = (html: any): [boolean, FlightDetails | undefined] => {
+  console.log('html is ', html)
+  
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(html, "text/html");
 
+  console.log('in getKlmDetails')
   try {
-    const locationNode = document.querySelector(
-      `td[style="font-family:Verdana,Arial,Helvetica,sans-serif;color:#005b82;font-size:13px;font-weight:bold"]`
-    )?.textContent;
-
-    if (!locationNode) {
-      throw new Error('locationNode is null');
-    }
-    const locations = locationNode?.trim().split(':')[1].trim();
-
-    let from = locations.split('-')[0].trim();
-    let to = locations.split('-')[1].trim();
-
-    const locationCodes = document.querySelectorAll(
-      `td[style="padding-top:2px;color:#003145;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10px"] > strong`
-    )[0].textContent;
-
-    if (!locationCodes) {
-      throw new Error('locationCodes is null');
-    }
-    const fromFullName = locationCodes.split('to')[0].trim();
-    const toFullName = locationCodes.split('to')[1].trim();
-
-    const codeFrom = fromFullName.split('(')[1].split(')')[0];
-    const codeTo = toFullName.split('(')[1].split(')')[0];
-
-    const dateNode = document.querySelectorAll(
-      `td[style="font-family:Verdana,Arial,Helvetica,sans-serif;color:#003145;font-size:10px;font-weight:bold"]`
-    );
-
-    if (!dateNode[1]?.textContent) {
-      throw new Error('dateNode[1] is null');
+    let departureDateFormatted, arrivalDateFormatted, departure, destination;
+    const tds = doc.querySelectorAll("td");
+    
+    const travelDates = tds[69].textContent?.trim().replace(/\t/g, '').replace(/\s+/g, ' ');
+    if(!travelDates || travelDates?.length === 0) {
+      throw new Error("Invalid HTML: travelDates no length")
     }
 
-    const date = dateNode[1].textContent.split('-')[0].trim();
-
-    const timesDepNodes = document.querySelectorAll(
-      `td[style="font-family:Verdana,Arial,Helvetica,sans-serif;color:#003145;font-size:10px"]`
-    );
-    if (!timesDepNodes[1]?.textContent) {
-      throw new Error('timesDepNodes[1] is null');
+    const travelDatesArray = travelDates.split(' - ');
+    if(travelDatesArray?.length > 0){
+      [departureDateFormatted, arrivalDateFormatted] = travelDatesArray
+    } else {
+      throw new Error("Invalid HTML: Error getting departureDateFormatted and arrivalDateFormatted")
     }
-    const departureTime = timesDepNodes[1].textContent.trim().slice(0, 5);
+    
+    const departDestination = tds ? tds[67].textContent?.trim().replace(/\t/g, '').replace(/\s+/g, ' ').replace(/Flight: /g, '').replace(/ - Return/g, '').split(' - ') : [];
 
-    const timesArrNodes = document.querySelectorAll(
-      `td[style="font-family:Verdana,Arial,Helvetica,sans-serif;color:#003145;font-size:10px;border-bottom:1px solid #c2deea"]`
-    );
-
-    if (!timesArrNodes[3]?.textContent) {
-      throw new Error('timesArrNodes[3] is null');
+    if (departDestination && departDestination.length > 0) {
+      [departure, destination] = departDestination;
+    } else {
+      throw new Error("Invalid HTML: getting departure and destination")
     }
-
-    const arrivalTime = timesArrNodes[3].textContent.trim().slice(0, 5);
-
-    return {
-      from: `${from} (${codeFrom})`,
-      destination: `${to} (${codeTo})`,
-      date,
-      departureTime,
-      arrivalTime,
+    
+    
+    return [true, {
+      from: departure,
+      destination,
+      // date,
+      // departureTime,
+      // arrivalTime,
+      departure: {
+        dateFormatted: departureDateFormatted
+      },
+      arrival: {
+        dateFormatted: arrivalDateFormatted
+      },
       airline: {
         name: 'KLM',
         logo: 'klm.png'
       }
-    };
-  } catch (err) {
-    console.log(err);
-    throw err;
-  }
+    }]
+  } catch(error: unknown) {
+    return [false, undefined]
+}
 };

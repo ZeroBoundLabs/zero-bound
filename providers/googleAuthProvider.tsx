@@ -2,7 +2,7 @@ import { FunctionComponent, ReactNode, createContext, useContext, useState } fro
 import useScript from "../hooks/use-script";
 import { FlightDetails, FlightInfo } from "../extractors/types";
 import { getKlmDetails, getLufthansaDetails, getRyanairDetails, getEasyJetDetails } from "../extractors";
-
+import { isEasyJetEmailConfirmation, isKlmEmailConfirmation, isLufthansaEmailConfirmation } from "../extractors/emailIdentifier";
 const API_KEY = process.env.NEXT_PUBLIC_API_KEY;
 const CLIENT_ID = process.env.NEXT_PUBLIC_CLIENT_ID;
 const SCOPES = 'https://www.googleapis.com/auth/gmail.readonly';
@@ -47,9 +47,11 @@ interface IWeb3AuthProps {
 interface TokenClient extends google.accounts.oauth2.TokenClient {
   callback: (payload: any) => void
 }
-
+//airfrance-klm@connect-passengers.com, noreply@klm.com, 
+//KLM Reservations
 const fromKey = 'from'
-const airlineSenders = ['confirmation@easyJet.com', 'Itinerary@ryanair.com']
+//'Itinerary@ryanair.com'
+const airlineSenders = ['noreply@klm.com', 'confirmation@easyJet.com']
 
 // Phase the below out
 const searchKey = 'subject' // subject
@@ -60,7 +62,10 @@ const searchTopics = [
   // 'Fwd: Confirmation: Berlin - San Francisco (SNJ3IN)',
   // 'Fwd: Booking details | Departure: 08 November 2022 | ZRH-BER'
 ]
-
+const extractors = {
+  klm: getKlmDetails,
+  easyjet: getEasyJetDetails
+}
 export const GoogleAuthProvider: FunctionComponent<IWeb3AuthState> = ({ children }: IWeb3AuthProps) => {
   const [tokenClient, setTokenClient] = useState<TokenClient | null>(null)
   const [token, setToken] = useState<GoogleApiOAuth2TokenObject | null>(null);
@@ -131,6 +136,7 @@ export const GoogleAuthProvider: FunctionComponent<IWeb3AuthState> = ({ children
       // Temporarily remove to deploy
       // const query = searchTopics.map(s => `${searchKey}: ${s}`).join(' OR ');
       const query = airlineSenders.map(s => `${fromKey}: ${s}`).join(' OR ');
+      console.log('query is ', query)
       //const query = "from: confirmation@easyJet.com"
 
       const { result: { messages: list } } = await gapi.client.gmail.users.messages.list({
@@ -149,34 +155,23 @@ export const GoogleAuthProvider: FunctionComponent<IWeb3AuthState> = ({ children
           if (!payload) continue;
 
           const data = ((payload?.parts?.length ? payload.parts?.[1]?.body?.data : payload?.body?.data) ?? '')
+          
           const decodedBody = Buffer.from(data, 'base64').toString();
 
-          // getKlmDetails, 
-          const extractors = [getEasyJetDetails]
-          let matchedConfirmationTemplate = false;
-          let flightInfo: FlightInfo;
-
-          //matchedConfirmationTemplate
-          extractors.forEach(extractor => {
-            let [matchedConfirmationTemplate, flightInfo]: [boolean, FlightDetails | undefined] = extractor(decodedBody)
-            if (matchedConfirmationTemplate) flights.push(flightInfo as FlightDetails);
-          })
-          // const [matchedConfirmationTemplate, easyInfo] = getEasyJetDetails(decodedBody);
+          const emailSubject = payload?.headers?.find(header => header?.name?.toLowerCase() === "subject")?.value;
+          const emailFrom = payload?.headers?.find(header => header?.name?.toLowerCase() === "from")?.value;
           
+          if(emailSubject && emailFrom) {
+            const extractor = isKlmEmailConfirmation(emailSubject, emailFrom) ? extractors['klm'] : isEasyJetEmailConfirmation(emailSubject, emailFrom) ? extractors['easyjet'] : isLufthansaEmailConfirmation(emailSubject, emailFrom) ? extractors['easyjet'] : undefined;
+          
+            if(extractor) {
+              let [matchedConfirmationTemplate, flightInfo]: [boolean, FlightDetails | undefined] = extractor(decodedBody);
 
-          //******** Temporarily remove in order to deploy ****** */
-                    // ~> this will be from: example flight@klm.com
-          //           const from = payload?.headers?.find(header => header?.name?.toLowerCase() === searchKey)?.value?.toLowerCase();
-          // console.log('from is ', from)
-          //           let flightInfo = {
-          //             ...(from?.includes('klm') && getKlmDetails(decodedBody) ),
-          //             ...(from?.includes('ryanair') && getRyanairDetails(decodedBody)),
-          //             ...(from?.includes('lufthansa') && getLufthansaDetails(decodedBody)),
-          //           }
-          // console.log('_______________')
-          //           if (Object.keys(flightInfo).length) {
-          //             flights.push(flightInfo as FlightDetails);
-          //           }          
+              if (matchedConfirmationTemplate) flights.push(flightInfo as FlightDetails);
+            } else {
+              // throw new Error(`Could not find an extractor for subject: ${emailSubject}, from: ${emailFrom}`)
+            }
+          }
         }
       }
     } catch (err) {
