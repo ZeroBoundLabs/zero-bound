@@ -12,14 +12,14 @@ const Flights = ({ isLoggedIn, messages }: FlightProps) => {
       <h2 className='text-lg md:text-xl'>Flight Reservations</h2>
       <ul className="list-none">
         {messages.map(
-          ({ destination, from, date, departureTime, arrivalTime, airline }, key) => (
-            <li key={key} className="flex items-center border-t border-gray-300 py-2">
+          ({ destination, from, date, departure, arrivalTime, airline }, key) => (
+            <li key={key} className="flex items-center border-t border-gray-300 py-2 relative">
               <img className="w-8 h-8 mr-2" src={airline.logo} alt={airline.name} />
               <div>
                 <p className="text-lg font-medium">{airline.name}</p>
-                <p className="text-sm text-gray-600">{date}</p>
+                <p className="text-sm text-gray-600">{departure.dateFormatted}</p>
               </div>
-              <div className="ml-auto text-right">
+              <div className="left-64 absolute" >
                 <p className="text-lg font-medium">{destination}</p>
                 <p className="text-sm text-gray-600">to {from}</p>
               </div>
