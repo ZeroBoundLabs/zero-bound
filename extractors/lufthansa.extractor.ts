@@ -48,14 +48,17 @@ export const getLufthansaDetails = (html: any): FlightDetails => {
     return {
       from: fromFull,
       destination: destinationFull,
-      date,
-      departureTime,
-      arrivalTime,
+      departure: {
+        dateFormatted: 'hardcoded'
+      },
+      arrival: {
+        dateFormatted: 'hardcoded'
+      },
       airline: {
         name: 'Lufthansa',
         logo: 'lufthansa.png'
       },
-      emissions: emissions
+      emissions: 120
     };
   } catch (err) {
     console.log(err);

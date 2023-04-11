@@ -41,9 +41,6 @@ export const getKlmDetails = (html: any): [boolean, FlightDetails | undefined] =
     return [true, {
       from: departure,
       destination,
-      // date,
-      // departureTime,
-      // arrivalTime,
       departure: {
         dateFormatted: departureDateFormatted
       },
@@ -54,7 +51,7 @@ export const getKlmDetails = (html: any): [boolean, FlightDetails | undefined] =
         name: 'KLM',
         logo: 'klm.png'
       },
-      emissions: emissions
+      emissions: 120
     }]
   } catch(error: unknown) {
     return [false, undefined]

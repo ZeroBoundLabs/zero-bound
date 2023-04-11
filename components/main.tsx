@@ -19,9 +19,20 @@ export interface IFlightInfo {
   airline: Airline
   emissions: number
 }
-
+export interface IFlightDetails {
+  from: string
+  destination: string
+  airline: Airline,
+  departure: {
+      dateFormatted: string
+  },
+  arrival: {
+      dateFormatted: string
+  },
+  emissions: number
+}
 const Main = () => {
-  const [messages, setMessages] = useState<Array<IFlightInfo>>([]);
+  const [messages, setMessages] = useState<Array<IFlightDetails>>([]);
   const [kgsToCompensate, setKgsToCompensate] = useState<number>(0);
   
   const {

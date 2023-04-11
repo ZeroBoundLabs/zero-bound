@@ -1,9 +1,9 @@
-import { IFlightInfo } from "./main";
+import { IFlightDetails } from "./main";
 import { useState } from "react";
 
 interface FlightProps {
   isLoggedIn: boolean,
-  messages: IFlightInfo[],
+  messages: IFlightDetails[],
   kgsToCompensate: number,
   setKgsToCompensate: Function
 }
@@ -19,7 +19,7 @@ const Flights = ({ isLoggedIn, messages, kgsToCompensate, setKgsToCompensate }: 
       <h2 className='text-lg md:text-xl'>Flight Reservations</h2>
       <ul className="list-none">
         {messages.map(
-          ({ destination, from, date, departure, arrivalTime, airline, emissions }, key) => (
+          ({ destination, from, departure, airline, emissions }, key) => (
             <li key={key} className="flex items-center border-t border-gray-300 py-2 relative">
               <img className="w-8 h-8 mr-2" src={airline.logo} alt={airline.name} />
               <div>

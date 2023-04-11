@@ -47,14 +47,17 @@ export const getRyanairDetails = (html: any): FlightDetails => {
     return {
       from: `${fromLong} (${fromShort})`,
       destination: `${destinationLong} (${destinationShort})`,
-      date,
-      departureTime,
-      arrivalTime,
+      departure: {
+        dateFormatted: 'hardcoded'
+      },
+      arrival: {
+        dateFormatted: 'hardcoded'
+      },
       airline: {
         name: 'Ryanair',
         logo: 'ryanair.png'
       },
-      emissions: emissions
+      emissions: 170
     };
   } catch (err) {
     throw err
