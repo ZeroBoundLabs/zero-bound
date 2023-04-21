@@ -41,7 +41,7 @@ const Flights = ({ isLoggedIn, messages, kgsToCompensate, setKgsToCompensate }: 
       </ul>
 
       {!messages.length && (
-        <div className='text-sm text-red-400'>{isLoggedIn ? 'No flight emails found' : 'Please Login...'}</div>
+        <div className='text-sm text-red-400'>{isLoggedIn ? 'No flight emails found' : 'Please Login to see your flights...'}</div>
       )}
     </>
   )

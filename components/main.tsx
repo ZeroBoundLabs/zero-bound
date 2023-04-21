@@ -162,12 +162,13 @@ const Main = () => {
             <br />
             <br />
             <br />
-            <h2 className='text-lg md:text-xl ml-16'>
-              {kgsToCompensate}kgs to compensate <br />
+            {(kgsToCompensate > 0) && <h2 className='text-lg md:text-xl ml-16'>
+              {kgsToCompensate}kgs to compensate <br /><br />
               <Link legacyBehavior href="/offset">
                 <a className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700">Let's offset</a>
               </Link>
-            </h2>
+            </h2>}
+            
           </div>
         </div>
       </main>
