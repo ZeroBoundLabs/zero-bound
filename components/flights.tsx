@@ -1,5 +1,4 @@
-import { IFlightDetails } from "./main";
-import { useState } from "react";
+import { IFlightDetails } from "../types/airline"
 
 interface FlightProps {
   isLoggedIn: boolean,
@@ -16,7 +15,7 @@ const Flights = ({ isLoggedIn, messages, kgsToCompensate, setKgsToCompensate }: 
 
   return (
     <>
-      <h2 className='text-lg md:text-xl'>Flight Reservations</h2>
+      <h2 className='text-lg md:text-xl'>Your flights</h2>
       <ul className="list-none">
         {messages.map(
           ({ destination, from, departure, airline, emissions }, key) => (

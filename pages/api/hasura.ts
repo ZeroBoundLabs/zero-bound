@@ -30,8 +30,7 @@ export default async function handler(req: any, res: any) {
       }
     }
   `;
-  console.log('emm: query is ', query)
-
+  
   try {
     const { data } = await client.query({ query, variables: { iataCodes: JSON.parse(iataCodes) } });
     res.status(200).json(data.airports);

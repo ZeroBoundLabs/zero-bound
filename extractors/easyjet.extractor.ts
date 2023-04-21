@@ -124,7 +124,9 @@ export function getEasyJetDetails(html: string): [boolean, IFlightDetails | unde
             },
             flightNumber,
             aircraft: "A320",
-            emissions: emissions
+            emissions: emissions,
+            fromCode: '',
+            destinationCode: ''
           }];
     } catch(error: unknown) {
         return [false, undefined]

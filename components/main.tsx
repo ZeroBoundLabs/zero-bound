@@ -59,8 +59,8 @@ const Main = () => {
       initEmmissions(airports)
 
       const dataWithEmissions:IFlightDetails[] = data.map(flight => {
-        const fromCode = getAirportCode(flight.from);
-        const destinationCode = getAirportCode(flight.destination);
+        const fromCode: string = getAirportCode(flight.from);
+        const destinationCode: string = getAirportCode(flight.destination);
        
         const flightDetails: IFlightDetails = {
           ...flight,
@@ -92,7 +92,7 @@ const Main = () => {
   }
   return (
     <>
-      <header className='relative flex h-20 flex-wrap justify-between items-center py-3 px-6 bg-indigo-100 w-full'>
+      <header className='relative flex h-20 flex-wrap justify-between items-center py-3 px-6 bg-blue-100 w-full'>
         <img className='absolute left-auto w-16 h-16 top-1' src={'carbon-neutral1.jpg'} alt={'logo'} />
         <div className='space-x-2 absolute right-8 top-2'>
           <button onClick={onLogin}>{isLoggedIn ? 'Change User' : 'Login'}</button>
@@ -148,7 +148,8 @@ const Main = () => {
             <br />
             <br />
             <h2 className='text-lg md:text-xl ml-16'>
-              {kgsToCompensate}kgs to compensate <button onClick={compensate}>Let's go</button>
+              {kgsToCompensate}kgs to compensate <br/>
+              <button onClick={compensate}>Let's go</button>
             </h2>
           </div>
         </div>

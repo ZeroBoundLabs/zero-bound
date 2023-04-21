@@ -24,7 +24,10 @@ const cityToAirportCode: CityToAirportCode = {
   Zurich: 'ZRH'
 };
 
-export function getAirportCode(partialCity: string): string | null {
+export function getAirportCode(partialCity: string): string {
+    if (!cityToAirportCode) {
+        throw new Error(`partialCity ${partialCity} not found`)
+    }
   return cityToAirportCode[partialCity];
 }
 

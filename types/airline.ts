@@ -5,9 +5,9 @@ export interface Airline {
 }
 export interface IFlightDetails {
     from: string;
-    fromCode?: string | null ;
+    fromCode: string;
     destination: string;
-    destinationCode?: string | null ;
+    destinationCode: string;
     flightNumber: number | null;
     airline: Airline;
     aircraft: string,

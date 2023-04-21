@@ -82,7 +82,9 @@ export const getKlmDetails = (html: any): [boolean, IFlightDetails | undefined] 
           logo: 'klm.png',
           operatorCarrierCode: 'KL'
         },
-        emissions: 120
+        emissions: 120,
+        fromCode: '',
+        destinationCode: ''
       }
     ];
   } catch (error: unknown) {
