@@ -3,7 +3,13 @@ import Flights from './flights';
 import { useGoogleAuth } from '../providers/googleAuthProvider';
 import { getAirportCode, getAirports } from '../utils/airports';
 import { Airline, IFlightDetails } from '../types/airline';
-import { calculateEmissions, computeFlightEmissions, FlightEmissions, getFlightEmissionsApiParams, initEmmissions } from '../utils/emissions';
+import {
+  calculateEmissions,
+  computeFlightEmissions,
+  FlightEmissions,
+  getFlightEmissionsApiParams,
+  initEmmissions
+} from '../utils/emissions';
 
 export interface IFlightInfo {
   from: string;
@@ -35,7 +41,6 @@ const Main = () => {
   } = useGoogleAuth();
 
   useEffect(() => {
-
     const init = async () => {
       if (!isLoggedIn) return;
 
@@ -49,40 +54,43 @@ const Main = () => {
         const fromCode = getAirportCode(flight.from);
         const destinationCode = getAirportCode(flight.destination);
 
-        if(fromCode && !airportCodes.includes(fromCode)) airportCodes.push(fromCode)
-        if(destinationCode && !airportCodes.includes(destinationCode)) airportCodes.push(destinationCode)
-      })
-      console.log('emm: airportCodes is ', airportCodes)
-      
-      const airports = await getAirports(airportCodes);
-      console.log('emm: airports is ', airports)
-      initEmmissions(airports)
+        if (fromCode && !airportCodes.includes(fromCode)) airportCodes.push(fromCode);
+        if (destinationCode && !airportCodes.includes(destinationCode)) airportCodes.push(destinationCode);
+      });
+      console.log('emm: airportCodes is ', airportCodes);
 
-      const dataWithEmissions:IFlightDetails[] = data.map(flight => {
+      const airports = await getAirports(airportCodes);
+      console.log('emm: airports is ', airports);
+      initEmmissions(airports);
+
+      const dataWithEmissions: IFlightDetails[] = data.map(flight => {
         const fromCode: string = getAirportCode(flight.from);
         const destinationCode: string = getAirportCode(flight.destination);
-       
+
         const flightDetails: IFlightDetails = {
           ...flight,
           fromCode,
           destinationCode
         };
-        
+
         //const flightEmissionsApiParams = getFlightEmissionsApiParams(flightDetails);
         //const flightWithEmissions = await computeFlightEmissions(flightEmissionsApiParams);
-        flightDetails.emissions = calculateEmissions(flightDetails.aircraft, flightDetails.fromCode, flightDetails.destinationCode);
-        
+        flightDetails.emissions = calculateEmissions(
+          flightDetails.aircraft,
+          flightDetails.fromCode,
+          flightDetails.destinationCode
+        );
+
         return flightDetails;
       });
-      
 
       setMessages(dataWithEmissions);
       setIsLoading(false);
     };
 
     init();
-   }, [token, isLoggedIn, setIsLoading]);
-  
+  }, [token, isLoggedIn, setIsLoading]);
+
   if (!isGapiLoaded || !isGsiLoaded) {
     return <></>;
   }
@@ -92,18 +100,20 @@ const Main = () => {
   }
   return (
     <>
-      <header style={{background: '#2F2F3C'}} className='relative flex h-20 flex-wrap justify-between items-center py-0 px-6 w-full'>
+      <header
+        style={{ background: '#2F2F3C' }}
+        className='relative flex h-20 flex-wrap justify-between items-center py-0 px-6 w-full'
+      >
         <img className='absolute left-12 w-16 h-16 top-1' src={'zb-logo.jpg'} alt={'logo'} />
         <img className='relative left-24 top-0 w-32 h-8' src={'zb-text.jpg'} alt={'logo'} />
         <div className='space-x-2 absolute right-8 top-2'>
-        <a href="#" onClick={onLogin} className="text-white px-2 hover:underline">
-          {isLoggedIn ? 'Change User' : 'Login'}
-        </a>
+          <a href='#' onClick={onLogin} className='text-white px-2 hover:underline'>
+            {isLoggedIn ? 'Change User' : 'Login'}
+          </a>
           {isLoggedIn && (
-            <a href="#" onClick={onLogin} className="text-white px-2 hover:underline">
+            <a href='#' onClick={onLogin} className='text-white px-2 hover:underline'>
               Signout
             </a>
-          
           )}
         </div>
       </header>
@@ -152,7 +162,7 @@ const Main = () => {
             <br />
             <br />
             <h2 className='text-lg md:text-xl ml-16'>
-              {kgsToCompensate}kgs to compensate <br/>
+              {kgsToCompensate}kgs to compensate <br />
               <button onClick={compensate}>Let's go</button>
             </h2>
           </div>
@@ -163,5 +173,3 @@ const Main = () => {
 };
 
 export default Main;
-
-
