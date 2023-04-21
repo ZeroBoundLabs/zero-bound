@@ -10,6 +10,7 @@ import {
   getFlightEmissionsApiParams,
   initEmmissions
 } from '../utils/emissions';
+import Link from 'next/link';
 
 export interface IFlightInfo {
   from: string;
@@ -164,6 +165,9 @@ const Main = () => {
             <h2 className='text-lg md:text-xl ml-16'>
               {kgsToCompensate}kgs to compensate <br />
               <button onClick={compensate}>Let's go</button>
+              <Link legacyBehavior href="/offset">
+                <a className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700">Let's offset</a>
+              </Link>
             </h2>
           </div>
         </div>
