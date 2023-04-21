@@ -8,8 +8,9 @@ export function getClient() {
     fetchOptions: {
       headers: {
         'x-hasura-admin-secret': HASURA_SECRET!,
-      },
+      }
     },
+    exchanges: []
   });
 }
 

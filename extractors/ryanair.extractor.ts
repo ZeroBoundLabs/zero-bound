@@ -1,4 +1,5 @@
 import { parseHTML } from 'linkedom';
+import { IFlightDetails } from '../types/airline';
 
 export const getRyanairDetails = (html: any): IFlightDetails => {
   const { document } = parseHTML(html);
@@ -57,7 +58,11 @@ export const getRyanairDetails = (html: any): IFlightDetails => {
         logo: 'ryanair.png',
         operatorCarrierCode: 'FR'
       },
-      emissions: 170
+      emissions: 120,
+      flightNumber: 1111,
+      aircraft: "A320",
+      fromCode: '',
+      destinationCode: ''
     };
   } catch (err) {
     throw err

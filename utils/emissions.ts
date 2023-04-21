@@ -200,6 +200,6 @@ const destination = 'LHR';
 try {
   const emissions = calculateEmissions(aircraftType, origin, destination);
   console.log(`Estimated carbon emissions: ${emissions.toFixed(2)} kg CO2e`);
-} catch (error) {
+} catch (error: any) {
   console.error(error.message);
 }

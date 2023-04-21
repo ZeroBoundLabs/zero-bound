@@ -92,8 +92,9 @@ const Main = () => {
   }
   return (
     <>
-      <header className='relative flex h-20 flex-wrap justify-between items-center py-3 px-6 bg-blue-100 w-full'>
-        <img className='absolute left-auto w-16 h-16 top-1' src={'carbon-neutral1.jpg'} alt={'logo'} />
+      <header style={{background: '#2F2F3C'}} className='relative flex h-20 flex-wrap justify-between items-center py-0 px-6 w-full'>
+        <img className='absolute left-12 w-16 h-16 top-1' src={'zb-logo.jpg'} alt={'logo'} />
+        <img className='relative left-24 top-0 w-32 h-8' src={'zb-text.jpg'} alt={'logo'} />
         <div className='space-x-2 absolute right-8 top-2'>
           <button onClick={onLogin}>{isLoggedIn ? 'Change User' : 'Login'}</button>
           {isLoggedIn && (
