@@ -10,8 +10,8 @@ interface FlightProps {
 
 const Flights = ({ isLoggedIn, messages, kgsToCompensate, setKgsToCompensate }: FlightProps) => {
 
-  function addToCompensate() {
-    setKgsToCompensate(kgsToCompensate + 138)
+  function addToCompensate(emissions: number) {
+    setKgsToCompensate(kgsToCompensate + emissions)
   }
 
   return (
@@ -32,7 +32,9 @@ const Flights = ({ isLoggedIn, messages, kgsToCompensate, setKgsToCompensate }: 
                 <p className="text-lg font-medium">{emissions ? emissions : '?'}kg</p>
               </div>
               <div className="right-8 absolute" >
-                <p className="text-lg font-medium"><button onClick={addToCompensate}>add</button></p>
+                <p className="text-lg font-medium">
+                  <button onClick={() => addToCompensate(emissions)}>add</button>
+                </p>
               </div>
             </li>
           )
@@ -45,5 +47,6 @@ const Flights = ({ isLoggedIn, messages, kgsToCompensate, setKgsToCompensate }: 
     </>
   )
 }
+
 
 export default Flights
