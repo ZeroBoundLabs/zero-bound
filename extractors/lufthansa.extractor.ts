@@ -56,7 +56,8 @@ export const getLufthansaDetails = (html: any): FlightDetails => {
       },
       airline: {
         name: 'Lufthansa',
-        logo: 'lufthansa.png'
+        logo: 'lufthansa.png',
+        operatorCarrierCode: 'LH'
       },
       emissions: 120
     };

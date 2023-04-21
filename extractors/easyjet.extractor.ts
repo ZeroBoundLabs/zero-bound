@@ -1,4 +1,5 @@
-import { FlightInfo, FlightDetails } from './types';
+import { IFlightDetails } from '../types/airline';
+import { parseFlightNumber } from '../utils/flights';
 
 function removeTerminals(str: string): string {
     const regex = /^(.*) \(Terminal .*\)$/;
@@ -9,12 +10,13 @@ function removeTerminals(str: string): string {
       return str; // return the original string if there's no match
     }
   }
+const isNumeric = (num: any) => (typeof(num) === 'number' || typeof(num) === "string" && num.trim() !== '') && !isNaN(num as number);
 
 function getEmissions(origin: string, destination: string, operatingCarrierCode: string, flightNumber: string, departureDate: string) {
     return 152; //kg
 }
 //replacing FlightInfo
-export function getEasyJetDetails(html: string): [boolean, FlightDetails | undefined] {
+export function getEasyJetDetails(html: string): [boolean, IFlightDetails | undefined] {
     const parser = new DOMParser();
     const doc = parser.parseFromString(html, "text/html");
 
@@ -29,8 +31,28 @@ export function getEasyJetDetails(html: string): [boolean, FlightDetails | undef
         if (!airports) {
             throw new Error("Invalid HTML: Could not find airports");
         }
-        const flightNumber = tds[3].textContent?.trim();
-    
+        const flightNumberStr = tds[3].textContent?.trim();
+        console.log('EasyJet Number: flightNumber is', flightNumberStr)
+        console.log('EasyJet Number: > tds[3].textContent is', tds[3].textContent)
+
+        let flightNumber;
+        const validEasyjetLabels = ['EZY', 'EZS', 'EJU']
+        
+        if(flightNumberStr) {
+            flightNumber = parseFlightNumber(flightNumberStr, validEasyjetLabels)
+            // flightNumberStringSplit = flightNumberStr.trim().split('EZY');
+            // if(flightNumberStringSplit.length === 1) {
+            //     flightNumberStringSplit = flightNumberStr.trim().split('EZS');
+            // }
+            // flightNumber = parseInt(flightNumberStr.trim().split('EZY')[1], 10);
+            
+            // if(!isNumeric(flightNumber)) {
+            //     flightNumber = undefined;
+            // }
+        } else {
+            flightNumber = null;
+        }
+        console.log('EasyJet Number: ', flightNumber)
         const airportsText = airports.textContent?.trim();
         if (!airportsText) {
             throw new Error("Invalid HTML: Could not find airport names");
@@ -84,6 +106,7 @@ export function getEasyJetDetails(html: string): [boolean, FlightDetails | undef
         //// dateTime: departureDate,
         
         const emissions = getEmissions('FAO', 'BER', 'EJU', '7544', '22 Apr 2023')
+        //operatorCarrierCode = EC, but seems they want U2
         return [true,
             {
             from: departureAirport.trim(),
@@ -96,8 +119,11 @@ export function getEasyJetDetails(html: string): [boolean, FlightDetails | undef
             },
             airline: {
                 name: 'EasyJet',
-                logo: 'ej.png'
+                logo: 'ej.png',
+                operatorCarrierCode: 'U2'
             },
+            flightNumber,
+            aircraft: "A320",
             emissions: emissions
           }];
     } catch(error: unknown) {

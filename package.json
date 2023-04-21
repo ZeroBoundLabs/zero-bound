@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@apollo/client": "^3.7.12",
     "@next/font": "13.1.1",
     "@solana/web3.js": "^1.73.3",
     "@web3auth/base": "^4.6.0",
@@ -16,10 +17,12 @@
     "@web3auth/openlogin-adapter": "^4.6.0",
     "canvas": "^2.11.0",
     "googleapis": "^110.0.0",
+    "graphql": "^16.6.0",
     "linkedom": "^0.14.21",
     "next": "13.1.1",
     "react": "18.2.0",
-    "react-dom": "18.2.0"
+    "react-dom": "18.2.0",
+    "urql": "^4.0.0"
   },
   "devDependencies": {
     "@types/gapi": "^0.0.43",

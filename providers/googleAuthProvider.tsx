@@ -1,8 +1,8 @@
 import { FunctionComponent, ReactNode, createContext, useContext, useState } from "react";
 import useScript from "../hooks/use-script";
-import { FlightDetails, FlightInfo } from "../extractors/types";
 import { getKlmDetails, getLufthansaDetails, getRyanairDetails, getEasyJetDetails } from "../extractors";
 import { isEasyJetEmailConfirmation, isKlmEmailConfirmation, isLufthansaEmailConfirmation } from "../extractors/emailIdentifier";
+import { IFlightDetails } from "../types/airline";
 const API_KEY = process.env.NEXT_PUBLIC_API_KEY;
 const CLIENT_ID = process.env.NEXT_PUBLIC_CLIENT_ID;
 const SCOPES = 'https://www.googleapis.com/auth/gmail.readonly';
@@ -17,7 +17,7 @@ export interface IGoogleAuthContext {
   onLogin: () => void;
   onSignout: () => void;
   setIsLoading: (check: boolean) => void;
-  listFlightData: () => Promise<FlightDetails[]>
+  listFlightData: () => Promise<IFlightDetails[]>
 }
 
 export const GoogleAuthContext = createContext<IGoogleAuthContext>({
@@ -29,7 +29,7 @@ export const GoogleAuthContext = createContext<IGoogleAuthContext>({
   onLogin: () => { },
   onSignout: () => { },
   setIsLoading: () => { },
-  listFlightData: async (): Promise<FlightDetails[]>  => { return [] }
+  listFlightData: async (): Promise<IFlightDetails[]>  => { return [] }
 })
 
 export function useGoogleAuth(): IGoogleAuthContext {
@@ -152,13 +152,14 @@ export const GoogleAuthProvider: FunctionComponent<IWeb3AuthState> = ({ children
     }
   };
 
-  const listFlightData = async (): Promise<FlightDetails[]> => {
-    const flights: Array<FlightDetails> = [];
+  const listFlightData = async (): Promise<IFlightDetails[]> => {
+    const flights: Array<IFlightDetails> = [];
 
     try {
       
       const query = airlineSenders.map(s => `${fromKey}: ${s}`).join(' OR ');
       
+      console.log('query is ', query)
       const { result: { messages: list } } = await gapi.client.gmail.users.messages.list({
         userId: 'me',
         q: query,
@@ -182,12 +183,15 @@ export const GoogleAuthProvider: FunctionComponent<IWeb3AuthState> = ({ children
           const emailFrom = payload?.headers?.find(header => header?.name?.toLowerCase() === "from")?.value;
           
           if(emailSubject && emailFrom) {
+            console.log('emailFrom: isEasyJetEmailConfirmation(emailSubject, emailFrom', isEasyJetEmailConfirmation(emailSubject, emailFrom))
+            console.log('emailFrom: activeAirlines.easyjet ', activeAirlines.easyjet)
+            
             const extractor = isKlmEmailConfirmation(emailSubject, emailFrom) && activeAirlines.klm ? extractors['klm'] : isEasyJetEmailConfirmation(emailSubject, emailFrom) && activeAirlines.easyjet ? extractors['easyjet'] : isLufthansaEmailConfirmation(emailSubject, emailFrom) && activeAirlines.lufthansa ? extractors['easyjet'] : undefined;
           
             if(extractor) {
-              let [matchedConfirmationTemplate, flightInfo]: [boolean, FlightDetails | undefined] = extractor(decodedBody);
+              let [matchedConfirmationTemplate, flightInfo]: [boolean, IFlightDetails | undefined] = extractor(decodedBody);
 
-              if (matchedConfirmationTemplate) flights.push(flightInfo as FlightDetails);
+              if (matchedConfirmationTemplate) flights.push(flightInfo as IFlightDetails);
             } else {
               // throw new Error(`Could not find an extractor for subject: ${emailSubject}, from: ${emailFrom}`)
             }
@@ -197,7 +201,7 @@ export const GoogleAuthProvider: FunctionComponent<IWeb3AuthState> = ({ children
     } catch (err) {
       alert((err as Error).message);
     }
-
+    console.log('flights is ', flights)
     return flights
   }
 

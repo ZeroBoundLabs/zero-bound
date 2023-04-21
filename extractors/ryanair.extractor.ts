@@ -1,7 +1,6 @@
 import { parseHTML } from 'linkedom';
-import { FlightDetails } from './types';
 
-export const getRyanairDetails = (html: any): FlightDetails => {
+export const getRyanairDetails = (html: any): IFlightDetails => {
   const { document } = parseHTML(html);
 
   try {
@@ -55,7 +54,8 @@ export const getRyanairDetails = (html: any): FlightDetails => {
       },
       airline: {
         name: 'Ryanair',
-        logo: 'ryanair.png'
+        logo: 'ryanair.png',
+        operatorCarrierCode: 'FR'
       },
       emissions: 170
     };
