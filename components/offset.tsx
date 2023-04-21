@@ -10,13 +10,14 @@ import {
   getFlightEmissionsApiParams,
   initEmmissions
 } from '../utils/emissions';
+import IFrame from './iframe';
 import Link from 'next/link';
 import Header from './header';
 
 const Offset = () => {
   const [messages, setMessages] = useState<Array<IFlightDetails>>([]);
   const [kgsToCompensate, setKgsToCompensate] = useState<number>(0);
-
+  const iframeSrc = 'https://checkout.patch.io/che_prod_d689b666f119cfb86451d1e264150af6/setup/projects';
   const {
     token,
     onLogin,
@@ -128,7 +129,11 @@ const Offset = () => {
             //     kgsToCompensate={kgsToCompensate}
             //     setKgsToCompensate={setKgsToCompensate}
             //   />
-                <div>LETS GO!@@@</div>
+                <div>
+                    <h2>You're doing great!</h2>
+                    <p>We estimate you have created a total of 3 tonnes with your flights. We recommend you offset with our partners as follows:</p>
+                    {/* <IFrame src={iframeSrc} width="600px" height="400px" title="My IFrame" /> */}
+                </div>
             )}
            
 
