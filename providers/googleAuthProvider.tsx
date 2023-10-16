@@ -59,7 +59,7 @@ const activeAirlines: ActiveAirlines = {
   klm: true,
   easyjet: true,
   lufthansa: false,
-  ryanair: true
+  ryanair: false
 }
 
 //airfrance-klm@connect-passengers.com, noreply@klm.com, 
@@ -69,8 +69,7 @@ const fromKey = 'from'
 function getAirlineSenders(activeAirlines: ActiveAirlines) {
   let senders = [];
   if(activeAirlines.klm) senders.push('noreply@klm.com')
-  if(activeAirlines.easyjet) senders.push('confirmation@easyJet.com')
-  if(activeAirlines.ryanair) senders.push('Itinerary@ryanair.com')
+  if(activeAirlines.klm) senders.push('confirmation@easyJet.com')
   
   return senders;
 }
@@ -89,8 +88,7 @@ const searchTopics = [
 ]
 const extractors = {
   klm: getKlmDetails,
-  easyjet: getEasyJetDetails,
-  ryanair: getRyanairDetails
+  easyjet: getEasyJetDetails
 }
 export const GoogleAuthProvider: FunctionComponent<IWeb3AuthState> = ({ children }: IWeb3AuthProps) => {
   const [tokenClient, setTokenClient] = useState<TokenClient | null>(null)
@@ -177,8 +175,6 @@ export const GoogleAuthProvider: FunctionComponent<IWeb3AuthState> = ({ children
 
           if (!payload) continue;
 
-          console.log("listFlightData: payload is", payload);
-          
           const data = ((payload?.parts?.length ? payload.parts?.[1]?.body?.data : payload?.body?.data) ?? '')
           
           const decodedBody = Buffer.from(data, 'base64').toString();
@@ -190,7 +186,7 @@ export const GoogleAuthProvider: FunctionComponent<IWeb3AuthState> = ({ children
             console.log('emailFrom: isEasyJetEmailConfirmation(emailSubject, emailFrom', isEasyJetEmailConfirmation(emailSubject, emailFrom))
             console.log('emailFrom: activeAirlines.easyjet ', activeAirlines.easyjet)
             
-            const extractor = isKlmEmailConfirmation(emailSubject, emailFrom) && activeAirlines.klm ? extractors['klm'] : isEasyJetEmailConfirmation(emailSubject, emailFrom) && activeAirlines.easyjet ? extractors['easyjet'] : isLufthansaEmailConfirmation(emailSubject, emailFrom) && activeAirlines.lufthansa ? extractors['easyjet'] : isKlmEmailConfirmation(emailSubject, emailFrom) && activeAirlines.klm ? extractors['ryanair'] : undefined;
+            const extractor = isKlmEmailConfirmation(emailSubject, emailFrom) && activeAirlines.klm ? extractors['klm'] : isEasyJetEmailConfirmation(emailSubject, emailFrom) && activeAirlines.easyjet ? extractors['easyjet'] : isLufthansaEmailConfirmation(emailSubject, emailFrom) && activeAirlines.lufthansa ? extractors['easyjet'] : undefined;
           
             if(extractor) {
               let [matchedConfirmationTemplate, flightInfo]: [boolean, IFlightDetails | undefined] = extractor(decodedBody);

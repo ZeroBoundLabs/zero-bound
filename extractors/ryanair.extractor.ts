@@ -1,8 +1,7 @@
 import { parseHTML } from 'linkedom';
 import { IFlightDetails } from '../types/airline';
 
-export const getRyanairDetails = (html: any): [boolean, IFlightDetails | undefined] => {
-  console.log("ryanair: getRyanairDetails")
+export const getRyanairDetails = (html: any): IFlightDetails => {
   const { document } = parseHTML(html);
 
   try {
@@ -65,7 +64,7 @@ export const getRyanairDetails = (html: any): [boolean, IFlightDetails | undefin
       fromCode: '',
       destinationCode: ''
     };
-  } catch(error: unknown) {
-    return [false, undefined]
-}
+  } catch (err) {
+    throw err
+  }
 };
