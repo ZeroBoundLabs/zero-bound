@@ -1,5 +1,4 @@
-import { IFlightDetails } from "./main";
-import { useState } from "react";
+import { IFlightDetails } from "../types/airline"
 
 interface FlightProps {
   isLoggedIn: boolean,
@@ -10,13 +9,13 @@ interface FlightProps {
 
 const Flights = ({ isLoggedIn, messages, kgsToCompensate, setKgsToCompensate }: FlightProps) => {
 
-  function addToCompensate() {
-    setKgsToCompensate(kgsToCompensate + 138)
+  function addToCompensate(emissions: number) {
+    setKgsToCompensate(kgsToCompensate + emissions)
   }
 
   return (
     <>
-      <h2 className='text-lg md:text-xl'>Flight Reservations</h2>
+      <h2 className='text-lg md:text-xl'>Your flights</h2>
       <ul className="list-none">
         {messages.map(
           ({ destination, from, departure, airline, emissions }, key) => (
@@ -32,7 +31,9 @@ const Flights = ({ isLoggedIn, messages, kgsToCompensate, setKgsToCompensate }: 
                 <p className="text-lg font-medium">{emissions ? emissions : '?'}kg</p>
               </div>
               <div className="right-8 absolute" >
-                <p className="text-lg font-medium"><button onClick={addToCompensate}>add</button></p>
+                <p className="text-lg font-medium">
+                  <button onClick={() => addToCompensate(emissions)}>add</button>
+                </p>
               </div>
             </li>
           )
@@ -40,10 +41,11 @@ const Flights = ({ isLoggedIn, messages, kgsToCompensate, setKgsToCompensate }: 
       </ul>
 
       {!messages.length && (
-        <div className='text-sm text-red-400'>{isLoggedIn ? 'No flight emails found' : 'Please Login...'}</div>
+        <div className='text-sm text-red-400'>{isLoggedIn ? 'No flight emails found' : 'Please Login to see your flights...'}</div>
       )}
     </>
   )
 }
+
 
 export default Flights

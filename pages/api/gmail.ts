@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { google } from 'googleapis';
 import { getRyanairDetails, getLufthansaDetails, getKlmDetails } from '../../extractors';
-import { FlightDetails } from '../../extractors/types';
+import { IFlightDetails } from '../../types/airline';
 
 const httpMethod = 'GET'
 const searchKey = 'subject' // subject
@@ -18,7 +18,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     const auth = req.headers.authorization
 
     const gmail = google.gmail({ version: 'v1', headers: { Authorization: `Bearer ${auth}` } });
-    const messages: Array<FlightDetails> = [];
+    const messages: Array<IFlightDetails> = [];
 
     try {
       const query = searchTopics.map(s => `${searchKey}: ${s}`).join(' OR ');
@@ -48,7 +48,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
           }
 
           if (Object.keys(flightInfo).length) {
-            messages.push(flightInfo as FlightDetails);
+            messages.push(flightInfo as IFlightDetails);
           }
           
           // ~ DO NOTHING!

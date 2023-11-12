@@ -1,20 +1,4 @@
-interface Airline {
-    name: string
-    logo: string
-}
-
-export interface FlightDetails {
-    from: string
-    destination: string
-    airline: Airline,
-    departure: {
-        dateFormatted: string
-    },
-    arrival: {
-        dateFormatted: string
-    },
-    emissions: number
-}
+import { Airline } from "../../types/airline"
 
 export interface FlightInfo {
     departureAirport: string;
