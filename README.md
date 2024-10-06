@@ -36,7 +36,7 @@ The application requires high-level permission to **read your emails**. It only 
 
 1. Clone the repository:
     ```bash
-    git clone https://github.com/your-username/flight-carbon-offset-tracker.git
+    git clone https://github.com/ZeroBoundLabs/zero-bound.git
     cd flight-carbon-offset-tracker
     ```
 
